@@ -1,0 +1,20 @@
+sm_ledger.settings:
+  title: 'SM Ledger Settings'
+  description: 'Configure ledger retention, recovery, and dispatch retries.'
+  route_name: sm_ledger.settings
+  parent: system.admin_config_system
+  weight: 99
+
+entity.event_record.collection:
+  title: 'SM Ledger Records'
+  description: 'View Messenger ledger records.'
+  route_name: entity.event_record.collection
+  parent: system.admin_config_system
+  weight: 100
+
+sm_ledger.reports:
+  title: 'SM Ledger Report'
+  description: 'View queue depth, processing times, and recent failures.'
+  route_name: sm_ledger.reports
+  parent: system.admin_reports
+  weight: 100

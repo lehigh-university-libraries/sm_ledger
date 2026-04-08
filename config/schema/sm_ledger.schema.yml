@@ -1,0 +1,44 @@
+sm_ledger.settings:
+  type: config_object
+  label: 'SM Ledger settings'
+  mapping:
+    retention:
+      type: mapping
+      label: 'Retention policy'
+      mapping:
+        completed_days:
+          type: integer
+          label: 'Completed retention in days'
+        abandoned_days:
+          type: integer
+          label: 'Abandoned retention in days'
+        failed_days:
+          type: integer
+          label: 'Failed retention in days'
+    dedupe:
+      type: mapping
+      label: 'Deduplication policy'
+      mapping:
+        ttl_seconds:
+          type: integer
+          label: 'Deduplication TTL in seconds'
+    recovery:
+      type: mapping
+      label: 'Recovery settings'
+      mapping:
+        stale_claim_threshold_seconds:
+          type: integer
+          label: 'Stale claim threshold in seconds'
+        heartbeat_interval_seconds:
+          type: integer
+          label: 'Heartbeat interval in seconds'
+    dispatch:
+      type: mapping
+      label: 'Dispatch settings'
+      mapping:
+        deadlock_retry_attempts:
+          type: integer
+          label: 'Deadlock retry attempts'
+        deadlock_retry_delay_ms:
+          type: integer
+          label: 'Deadlock retry delay in milliseconds'

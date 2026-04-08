@@ -1,0 +1,15 @@
+sm_ledger.settings:
+  path: '/admin/config/system/sm-ledger/settings'
+  defaults:
+    _form: '\Drupal\sm_ledger\Form\SmLedgerSettingsForm'
+    _title: 'SM Ledger Settings'
+  requirements:
+    _permission: 'administer sm ledger'
+
+sm_ledger.reports:
+  path: '/admin/reports/sm-ledger'
+  defaults:
+    _controller: '\Drupal\sm_ledger\Controller\SmLedgerReportController::overview'
+    _title: 'SM Ledger Report'
+  requirements:
+    _permission: 'administer sm ledger'

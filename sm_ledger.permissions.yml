@@ -1,0 +1,5 @@
+administer sm ledger:
+  title: 'Administer SM Ledger'
+  description: 'View and manage Messenger ledger records and reports.'
+  restrict access: true
+

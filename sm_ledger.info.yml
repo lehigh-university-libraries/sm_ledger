@@ -1,0 +1,14 @@
+name: "SM Ledger"
+type: module
+description: "Domain ledger and lifecycle tracking for Symfony Messenger work in Drupal."
+package: Messaging
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:action
+  - drupal:options
+  - drupal:system
+  - drupal:views
+  - sm:sm
+  - sm_workers:sm_workers
+  - views_bulk_operations:views_bulk_operations
+

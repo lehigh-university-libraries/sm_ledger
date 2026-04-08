@@ -1,0 +1,12 @@
+services:
+  sm_ledger.commands:
+    class: Drupal\sm_ledger\Commands\SmLedgerCommands
+    arguments:
+      - "@entity_type.manager"
+      - "@sm_ledger.retention"
+      - "@sm_ledger.archive"
+      - "@sm_ledger.stale_claims"
+      - "@sm_ledger.operator"
+      - "@sm_workers.queue_depths"
+    tags:
+      - { name: drush.command }

@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * @file
+ * Update hooks for the SM Ledger module.
+ */
+
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Database\Database;
+
+/**
+ * Renames the event record base table to the generic sm_ledger name.
+ */
+function sm_ledger_update_9001(): void {
+  $schema = Database::getConnection()->schema();
+  if ($schema->tableExists('islandora_events_record')
+    && !$schema->tableExists('sm_ledger_event_record')) {
+    $schema->renameTable('islandora_events_record', 'sm_ledger_event_record');
+  }
+
+  sm_ledger_update_replace_table_name_in_view_config(\Drupal::configFactory());
+}
+
+/**
+ * Removes permanent dedupe uniqueness and installs standalone defaults.
+ */
+function sm_ledger_update_9002(): void {
+  $connection = Database::getConnection();
+  $schema = $connection->schema();
+
+  if (
+    $schema->tableExists('sm_ledger_event_record')
+    && $schema->indexExists('sm_ledger_event_record', 'event_record__dedupe_key')
+  ) {
+    $schema->dropUniqueKey('sm_ledger_event_record', 'event_record__dedupe_key');
+  }
+
+  $config = \Drupal::configFactory()->getEditable('sm_ledger.settings');
+  if ($config->get('dedupe.ttl_seconds') === NULL) {
+    $config->set('dedupe.ttl_seconds', 86400);
+  }
+  if ($config->get('recovery.stale_claim_threshold_seconds') === NULL) {
+    $config->set('recovery.stale_claim_threshold_seconds', 3600);
+  }
+  $config->save(TRUE);
+}
+
+/**
+ * Rewrites installed view config to use the renamed event record table.
+ */
+function sm_ledger_update_replace_table_name_in_view_config(
+  ConfigFactoryInterface $configFactory,
+): void {
+  $config = $configFactory->getEditable('views.view.islandora_events');
+  $data = $config->getRawData();
+  if ($data === []) {
+    return;
+  }
+
+  $rewritten = sm_ledger_update_replace_config_value(
+    $data,
+    'islandora_events_record',
+    'sm_ledger_event_record',
+  );
+  if ($rewritten !== $data) {
+    $config->setData($rewritten)->save(TRUE);
+  }
+}
+
+/**
+ * Recursively replaces one scalar config value.
+ */
+function sm_ledger_update_replace_config_value(
+  mixed $value,
+  string $from,
+  string $to,
+): mixed {
+  if (is_array($value)) {
+    foreach ($value as $key => $item) {
+      $value[$key] = sm_ledger_update_replace_config_value($item, $from, $to);
+    }
+    return $value;
+  }
+
+  return $value === $from ? $to : $value;
+}

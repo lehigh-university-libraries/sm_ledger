@@ -1,0 +1,12 @@
+retention:
+  completed_days: 30
+  abandoned_days: 30
+  failed_days: 0
+dedupe:
+  ttl_seconds: 86400
+recovery:
+  stale_claim_threshold_seconds: 3600
+  heartbeat_interval_seconds: 30
+dispatch:
+  deadlock_retry_attempts: 3
+  deadlock_retry_delay_ms: 100

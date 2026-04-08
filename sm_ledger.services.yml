@@ -1,0 +1,67 @@
+services:
+  logger.channel.sm_ledger:
+    parent: logger.channel_base
+    arguments: ["sm_ledger"]
+
+  sm_ledger.projection:
+    class: Drupal\sm_ledger\Service\LedgerProjectionService
+    arguments: ["@entity_type.manager", "@datetime.time", "@current_user", "@database", "@config.factory"]
+  sm_ledger.event_record: '@sm_ledger.projection'
+  Drupal\sm_ledger\Service\EventRecordService: '@sm_ledger.projection'
+  Drupal\sm_ledger\Service\LedgerProjectionService: '@sm_ledger.projection'
+
+  sm_ledger.recovery:
+    class: Drupal\sm_ledger\Service\LedgerRecoveryService
+    arguments: ["@entity_type.manager", "@database", "@datetime.time"]
+  Drupal\sm_ledger\Service\LedgerRecoveryService: '@sm_ledger.recovery'
+
+  sm_ledger.analytics:
+    class: Drupal\sm_ledger\Service\LedgerAnalyticsService
+    arguments: ["@database", "@entity_type.manager"]
+  Drupal\sm_ledger\Service\LedgerAnalyticsService: '@sm_ledger.analytics'
+
+  sm_ledger.capacity_report:
+    class: Drupal\sm_ledger\Service\LedgerCapacityReportService
+    arguments: ["@sm_workers.queue_depths", "@sm_ledger.analytics"]
+  Drupal\sm_ledger\Service\LedgerCapacityReportService: '@sm_ledger.capacity_report'
+
+  sm_ledger.dispatch:
+    class: Drupal\sm_ledger\Service\LedgerDispatchService
+    arguments: ["@sm_ledger.projection", "@database", "@lock", "@messenger.default_bus", "@config.factory"]
+  Drupal\sm_ledger\Service\LedgerDispatchService: '@sm_ledger.dispatch'
+
+  sm_ledger.execution_lock:
+    class: Drupal\sm_ledger\Service\LedgerExecutionLockService
+    arguments: ["@lock", "@config.factory"]
+  Drupal\sm_ledger\Service\LedgerExecutionLockService: '@sm_ledger.execution_lock'
+
+  sm_ledger.operator:
+    class: Drupal\sm_ledger\Service\LedgerOperatorService
+    arguments:
+      - "@sm_ledger.projection"
+      - "@database"
+      - "@messenger.default_bus"
+      - !tagged_iterator { tag: sm_ledger.requeue_handler }
+      - !tagged_iterator { tag: sm_ledger.run_now_handler }
+  Drupal\sm_ledger\Service\LedgerOperatorService: '@sm_ledger.operator'
+
+  sm_ledger.retention:
+    class: Drupal\sm_ledger\Service\LedgerRetentionService
+    arguments: ["@entity_type.manager", "@config.factory", "@datetime.time"]
+  Drupal\sm_ledger\Service\LedgerRetentionService: '@sm_ledger.retention'
+
+  sm_ledger.archive:
+    class: Drupal\sm_ledger\Service\LedgerArchiveService
+    arguments: ["@entity_type.manager", "@sm_ledger.retention"]
+  Drupal\sm_ledger\Service\LedgerArchiveService: '@sm_ledger.archive'
+
+  sm_ledger.stale_claims:
+    class: Drupal\sm_ledger\Service\LedgerStaleClaimService
+    arguments: ["@entity_type.manager", "@database", "@datetime.time", "@config.factory"]
+  Drupal\sm_ledger\Service\LedgerStaleClaimService: '@sm_ledger.stale_claims'
+
+  sm_ledger.worker_lifecycle_subscriber:
+    class: Drupal\sm_ledger\EventSubscriber\WorkerLifecycleSubscriber
+    arguments: ["@sm_ledger.projection", "@datetime.time", "@sm_ledger.execution_lock"]
+    tags:
+      - { name: event_subscriber }

@@ -1,0 +1,31 @@
+{
+  "name": "drupal/sm_ledger",
+  "description": "Domain ledger and lifecycle tracking for Symfony Messenger work in Drupal.",
+  "type": "drupal-module",
+  "keywords": ["Drupal", "symfony-messenger"],
+  "homepage": "https://drupal.org/project/sm_ledger",
+  "support": {
+    "issues": "https://drupal.org/project/issues/sm_ledger"
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://packages.drupal.org/8"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/lehigh-university-libraries/sm_workers"
+    }
+  ],
+  "require": {
+    "drupal/sm": "^0.2"
+  },
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Joe Corall",
+      "email": "jjc223@lehigh.edu",
+      "role": "Maintainer"
+    }
+  ]
+}
